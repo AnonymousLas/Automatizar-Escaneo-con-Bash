@@ -13,7 +13,10 @@
   ```bash
   sudo apt install nmap
 
-sudo nmap -p- -T4 -v -n -oG allPorts 192.168.1.1
+# 1. sudo nmap -p- -T4 -v -n -oG allPorts 192.168.1.1
+#      extractPorts allPorts
+# 2. nmap -sC -sV -p22,80,443,16667 192.168.1.1 -oN targeted
+
 
 extractPorts allPorts
 
