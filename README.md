@@ -12,3 +12,15 @@
   
   ```bash
   sudo apt install nmap
+
+sudo nmap -p- -T4 -v -n -oG allPorts 192.168.1.1
+
+extractPorts allPorts
+
+[+] Extracting information...
+        [+] IP Address: 192.168.1.44
+        [+] Open ports: 22,80,443,16667
+[+] Ports have been copied to clipboard!
+
+
+Este código está listo para ser copiado y pegado directamente en tu archivo `README.md`. Si necesitas algún ajuste adicional o tienes alguna otra pregunta, no dudes en decírmelo. ¡Estoy aquí para ayudarte!
