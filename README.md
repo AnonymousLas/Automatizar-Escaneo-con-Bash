@@ -10,7 +10,7 @@
 
   ```bash
   # Escaneo completo de todos los puertos
-  sudo nmap -p- -T4 -v -n -oG allPorts 192.168.1.1
+  sudo nmap -sS -- min-rate 5000 -- open -vvv -n -Pn -p- 192.168.1.1 -oG allPorts
   
   # Extraer puertos abiertos utilizando extractPorts
   extractPorts allPorts
