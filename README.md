@@ -13,13 +13,12 @@
   ```bash
   
   sudo apt install nmap
+    ```bash
   sudo nmap -p- -T4 -v -n -oG allPorts 192.168.1.1
+    ```bash
   extractPorts allPorts
+    ```bash
   nmap -sC -sV -p22,80,443,16667 192.168.1.1 -oN targeted
-
-
-
-
 
 [+] Extracting information...
         [+] IP Address: 192.168.1.44
