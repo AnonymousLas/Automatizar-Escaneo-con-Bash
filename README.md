@@ -11,11 +11,12 @@
 - **Nmap**: Asegúrate de tener instalado Nmap para realizar escaneos de puertos. Puedes instalarlo con el siguiente comando:
   
   ```bash
+  
   sudo apt install nmap
+  sudo nmap -p- -T4 -v -n -oG allPorts 192.168.1.1
+  extractPorts allPorts
+  nmap -sC -sV -p22,80,443,16667 192.168.1.1 -oN targeted
 
-### 1. sudo nmap -p- -T4 -v -n -oG allPorts 192.168.1.1
-### 2.     extractPorts allPorts
-### 3. nmap -sC -sV -p22,80,443,16667 192.168.1.1 -oN targeted
 
 
 
