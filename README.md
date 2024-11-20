@@ -18,7 +18,7 @@
 ### 3. nmap -sC -sV -p22,80,443,16667 192.168.1.1 -oN targeted
 
 
-extractPorts allPorts
+
 
 [+] Extracting information...
         [+] IP Address: 192.168.1.44
