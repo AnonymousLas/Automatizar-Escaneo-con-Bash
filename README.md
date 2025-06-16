@@ -6,7 +6,7 @@
 ## Requisitos
 
 - **Nmap**: Asegúrate de tener instalado Nmap para realizar escaneos de puertos. Puedes instalarlo y ejecutar el siguiente flujo de comandos:
-
+sudo arp-scan --interface=eth0 --localnet
   ```bash
   # Escaneo completo de todos los puertos
   sudo nmap -sS --min-rate 5000 --open -vvv -n -Pn -p- 192.168.1.1 -oG allPorts
