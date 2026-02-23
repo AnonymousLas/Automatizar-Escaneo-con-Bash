@@ -26,6 +26,9 @@ function extractPorts() {
 
     # Extraer puertos abiertos
     ports=$(grep "Host:" "$file" | grep "Ports:" | sed -E 's/.*Ports: //' | tr ',' '\n' | grep '/open' | cut -d '/' -f1 | tr '\n' ',' | sed 's/,$//')
+    
+    # Eliminar espacios después de las comas
+    ports=$(echo "$ports" | sed 's/, /,/g')
 
     echo -e "\t[+] Target IP Address: $ip"
     echo -e "\t[+] Open Ports: $ports"
